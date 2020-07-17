@@ -1,0 +1,45 @@
+import boto3
+import re
+import requests
+from requests_aws4auth import AWS4Auth
+import datetime
+import json
+
+region = 'us-east-1' # e.g. us-west-1
+service = 'es'
+credentials = boto3.Session().get_credentials()
+access_key = "AKIAQLYJ2U6K25FXFBWL"
+secret_key = "6UtNvzopZb6DcsvbtCYXV7/yPd9kaW3pQFMchLn7"
+awsauth = AWS4Auth(access_key, secret_key, region, service)
+
+host = 'https://search-testexampaper-vgkmqxjbgybrp533r4giiervmu.us-east-1.es.amazonaws.com' # the Amazon ES domain, including https://
+index = 'studentrecords'
+type = 'student'
+url = host + '/' + index + '/' + type
+
+headers = { "Content-Type": "application/json" }
+
+# Lambda execution starts here
+def lambda_handler(event, context):
+    StudentName = event['StudentName']
+    FileName = event['FileName']
+    Answer = event['Answer']
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    
+    document = { "StudentName": StudentName, "FileName": FileName, "Answer" : Answer, "UploadTime" : current_time}
+    r = requests.post(url, auth=awsauth, json=document, headers=headers)
+    print("response post insert into elastic", r)
+    #StudentNameLower=StudentName.lower()
+    #query = {"query": {"term":{"Answer": "going"}}}
+    #query = {"query": { "bool" : { "must" : [ { "term" : { "StudentName" : StudentNameLower }}, {"term" : { "Answer" : "going" }} ] }  }}
+    #url1 = host + '/' + index + '/' + '_search' 
+    #response = requests.get(url1, auth=awsauth, headers=headers, data=json.dumps(query))
+    #result = json.loads(response.text, )
+    #result_doc = result["hits"]["hits"]
+    #for num, doc in enumerate(result_doc):
+     #   print ( str(doc["_source"]["Answer"]),str(doc["_source"]["StudentName"]), str(doc["_source"]["FileName"]) )
+        #result_json = {"StudentName" : str(doc["_source"]["StudentName"]), "Answer": str(doc["_source"]["Answer"]), "FileName": str(doc["_source"]["FileName"],
+        #"Result" : "PASS"}
+        
+    return { "StudentName" : StudentName, "FileName" : FileName, "Answer" :Answer}
+    

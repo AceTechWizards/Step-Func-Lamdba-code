@@ -1,0 +1,30 @@
+import pymysql
+
+#config
+endpoint = 'glmoodle.cwoj89rqkgoa.us-east-1.rds.amazonaws.com'
+username = 'admin'
+password = 'Czt732ck#'
+databasename = 'moodle'
+
+#connection
+connection = pymysql.connect(endpoint, user=username, 
+        passwd=password, db=databasename)
+
+def lambda_handler(event, context):
+    fileName=event['fileName']
+    bucketName=event['bucket']
+    cursor = connection.cursor()
+    #contenthash = "08199e977558652ab5875118df189a6e23e4d141"
+    #cursor.execute("SHOW TABLES")
+    #sql_query = 'select user name fro mmdl file where contenthas like %' + contenthash + '%'
+    #sql_query = "describe table mdl_files"
+    cursor.execute("select author from mdl_files where contenthash like %s", (fileName))
+    rows = cursor.fetchall()
+    StudentName = ""
+    for row in rows:
+        name=row[0]
+        StudentName = name.replace(' ', '_')        
+
+    response={ "StudentName" : StudentName, "Bucket": bucketName, "FileName": fileName}
+    return response
+

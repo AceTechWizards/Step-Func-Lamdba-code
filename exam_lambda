@@ -8,8 +8,8 @@ import json
 region = 'us-east-1' # e.g. us-west-1
 service = 'es'
 credentials = boto3.Session().get_credentials()
-access_key = "AKIAQLYJ2U6K25FXFBWL"
-secret_key = "6UtNvzopZb6DcsvbtCYXV7/yPd9kaW3pQFMchLn7"
+access_key = "type-access-key-here"
+secret_key = "type-secret-key-here"
 awsauth = AWS4Auth(access_key, secret_key, region, service)
 
 host = 'https://search-testexampaper-vgkmqxjbgybrp533r4giiervmu.us-east-1.es.amazonaws.com' # the Amazon ES domain, including https://
